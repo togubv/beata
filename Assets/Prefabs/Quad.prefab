@@ -12,13 +12,13 @@ GameObject:
   - component: {fileID: 7183980095504771898}
   - component: {fileID: 7183980095504771899}
   - component: {fileID: 7183980095504771896}
-  - component: {fileID: 5532275945029793945}
+  - component: {fileID: -8599735225978185810}
   m_Layer: 0
   m_Name: Quad
   m_TagString: Quad
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4
   m_IsActive: 1
 --- !u!4 &7183980095504771893
 Transform:
@@ -95,7 +95,7 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &5532275945029793945
+--- !u!114 &-8599735225978185810
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -104,7 +104,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 7183980095504771897}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ecc7da78a822b014cbed46ab5f52fe97, type: 3}
+  m_Script: {fileID: 11500000, guid: cc5692396acb56b4eb0d9351c48441d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   position: 0
+  animator: {fileID: 0}

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,79 +7,103 @@ public class GameUI : MonoBehaviour
     [SerializeField] private Game game;
     [SerializeField] private Generator generator;
 
-    public Text textMultiplier, textScore, textFinishScore;
-    public GameObject goTextMultiplier, goTextScore, panelFinish, panelPause, uiJoystick, canvasTap;
-
+    public GameObject canvasMenu;
+    public Text textMultiplier, textScore, textFinishScore, textFinishTitle, textLifes, textMistakesMax, textMistakesCurrent;
+    public GameObject goTextMultiplier, goTextScore, panelFinish, uiJoystick, uiJoystickSwitcher, canvasTap;
+    public Slider sliderLifes;
+    public GameObject buttonContinue, buttonRestart, joystick;
     public Animation animMultiplier, animScore;
 
-    private void Start()
+    private void OnEnable()
     {
         animMultiplier = goTextMultiplier.GetComponent<Animation>();
         animScore = goTextScore.GetComponent<Animation>();
+
+        game.UpdateScoreHandlerEvent += UpdateScoreUI;
+        game.UpdateMultiplierHandlerEvent += UpdateMultiplierUI;
+
+        game.UpdateGameStateHandlerEvent += UpdateGameStateUI;
+        game.UpdateLevelStateHandlerEvent += UpdateLevelStateUI;
+
+        OnSliderValueChange();
     }
 
-    public void RefreshUI(int multiplier, int score, bool anim_multi, bool anim_score)
+    private void UpdateGameStateUI(GameState state)
     {
-        textMultiplier.text = multiplier.ToString();
-        textScore.text = score.ToString();
+        if (state == GameState.Game)
+        {
+            canvasMenu.SetActive(false);
+            ToggleJoystickUI(true);
+            return;
+        }
 
-        if (anim_multi) animMultiplier.Play("TextScoreAnimation");
-        if (anim_score) animScore.Play("TextScoreAnimation");
+        canvasMenu.SetActive(true);
     }
 
-    public void FinushLevel(int score)
+    private void UpdateLevelStateUI(LevelState state)
     {
-        ToggleUIJoystick(false);
-        textFinishScore.text = score.ToString();
+        if (state == LevelState.Start)
+        {
+            panelFinish.SetActive(false);
+            return;
+        }
+
+        if (state == LevelState.Finish)
+        {
+            ShowFinishPanel("FINISH!");
+            buttonContinue.SetActive(true);
+            buttonRestart.SetActive(false);
+            return;
+        }
+        
+        if (state == LevelState.Lose)
+        {
+            ShowFinishPanel("GAME OVER!");
+            buttonContinue.SetActive(false);
+            buttonRestart.SetActive(true);
+            return;
+        }
+    }
+    
+    private void ShowFinishPanel(string txt)
+    {
         panelFinish.SetActive(true);
+        textFinishTitle.text = txt;
+        SetText(textFinishScore, game.score.ToString());
+        SetText(textMistakesCurrent, game.mistakes.ToString());
+        SetText(textMistakesMax, game.lifes.ToString());
+        ToggleJoystickUI(false);
     }
 
-    public void StartLevel()
+    public void UpdateScoreUI(int oldValue, int newValue)
     {
-        ToggleUIJoystick(true);
-        panelFinish.SetActive(false);
+        SetText(textScore, newValue.ToString());
+
+        if (animScore != null)
+            animScore.Play("TextUpdateAnimation");
     }
 
-    public void TogglePausePanel(bool toggle)
+    public void UpdateMultiplierUI(int oldValie, int newValue)
     {
-        if (toggle)
-        {
-            ToggleUIJoystick(false);
-            panelPause.SetActive(true);
-            game.GameStatePause();
-        }
-        else
-        {
-            ToggleUIJoystick(true);
-            panelPause.SetActive(false);
-            game.GameStateGame();
-        }
+        SetText(textMultiplier, newValue.ToString());
+
+        if (animMultiplier != null)
+            animMultiplier.Play("TextUpdateAnimation");
     }
 
-    public void ToggleUIJoystick(bool toggle)
+    public void ToggleJoystickUI(bool toggle)
     {
         if (toggle) uiJoystick.SetActive(true);
         else uiJoystick.SetActive(false);
     }
 
-    public void GameMenuContinue()
+    public void SwitchJoystickPosition()
     {
-        TogglePausePanel(false);
-    }
+        Vector2 position_1 = uiJoystick.transform.localPosition;
+        Vector2 position_2 = uiJoystickSwitcher.transform.localPosition;
 
-    public void GameMenuExit()
-    {
-        Debug.Log("EXIT");
-    }
-
-    public void ToMainMenu()
-    {
-        // menu menu scene
-    }
-
-    public void StartNextLevel()
-    {
-        game.RestartGame();
+        uiJoystick.transform.localPosition = position_2;
+        uiJoystickSwitcher.transform.localPosition = position_1;
     }
 
     public void StartGameAnimation()
@@ -93,15 +115,36 @@ public class GameUI : MonoBehaviour
     {
         Animator anim = canvasTap.GetComponent<Animator>();
         anim.SetTrigger("Fade");
-        yield return new WaitForSeconds(0.5f);
-        canvasTap.SetActive(false);
-        generator.GenerateLevel(20, 10, 1); // default (x, 20, 10);
+        canvasTap.GetComponent<Canvas>().enabled = false;
         yield return new WaitForSeconds(1.0f);
-        game.GameStateGame();
+        canvasTap.SetActive(false);
+        yield return new WaitForSeconds(1.0f);
+    }
+
+    public void OnSliderValueChange()
+    {
+        if (sliderLifes.value > 50)
+        {
+            SetText(textLifes, "INFINITE");
+            return;
+        }
+
+        SetText(textLifes, sliderLifes.value.ToString());
     }
 
     public void Quit()
     {
         Application.Quit();
     }
+
+    private void SetText(Text text, string str)
+    {
+        text.text = str;
+    }
+}
+
+public enum JoystickPosition
+{
+    Right,
+    Left
 }

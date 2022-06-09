@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 
 public class Player : MonoBehaviour
 {
@@ -9,33 +6,60 @@ public class Player : MonoBehaviour
 
     [SerializeField] private VariableJoystick variableJoystick;
 
-    private Camera main_camera;
+    private Camera mainCamera;
     private Rigidbody rb;
-    private BoxCollider boxcollider;
+    private Transform trans, cameraTrans;
+    private float speed;
 
     private void Start()
     {
-        boxcollider = GetComponent<BoxCollider>();
         rb = GetComponent<Rigidbody>();
-        main_camera = Camera.main;
+        mainCamera = Camera.main;
+        cameraTrans = mainCamera.gameObject.GetComponent<Transform>();
+        trans = GetComponent<Transform>();
+
+        game.UpdateGameSpeedHandlerEvent += UpdateSpeed;
     }
 
     private void Update()
     {
-        if (IsGame() && variableJoystick.Vertical > 0 && transform.position.y < 1)
-                transform.position = new Vector3(transform.position.x, transform.position.y + 1, transform.position.z);
+        if (IsGame())
+        {
+            Move();
+            cameraTrans.position = new Vector3(cameraTrans.position.x, cameraTrans.position.y, trans.position.z - 4.0f);
+        }
+    }
 
-        if (IsGame() && variableJoystick.Vertical < 0 && transform.position.y > 0)
-                transform.position = new Vector3(transform.position.x, transform.position.y - 1, transform.position.z);
+    private void Move()
+    {
+        if (variableJoystick.Vertical > 0 && transform.position.y < 1)
+        { 
+            trans.position = new Vector3(trans.position.x, trans.position.y + 1, trans.position.z);
+            return;
+        }
 
-        if (IsGame() && variableJoystick.Horizontal < 0 && transform.position.x > 0)
-                transform.position = new Vector3(transform.position.x - 1, transform.position.y, transform.position.z);
+        if (variableJoystick.Vertical < 0 && transform.position.y > 0)
+        {
+            trans.position = new Vector3(trans.position.x, trans.position.y - 1, trans.position.z);
+            return;
+        }
 
-        if (IsGame() && variableJoystick.Horizontal > 0 && transform.position.x < 1)
-                transform.position = new Vector3(transform.position.x + 1, transform.position.y, transform.position.z);
+        if (variableJoystick.Horizontal < 0 && transform.position.x > 0)
+        {
+            trans.position = new Vector3(trans.position.x - 1, trans.position.y, trans.position.z);
+            return;
+        }
 
+        if (variableJoystick.Horizontal > 0 && transform.position.x < 1)
+        {
+            trans.position = new Vector3(trans.position.x + 1, trans.position.y, trans.position.z);
+            return;
+        }
+    }
 
-        main_camera.transform.position = new Vector3(main_camera.transform.position.x, main_camera.transform.position.y, transform.position.z - 4.0f);
+    private void UpdateSpeed(float speed)
+    {
+        this.speed = speed;
     }
 
     bool IsGame()
@@ -49,21 +73,20 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
-        rb.velocity = transform.forward * game.Speed;
+        rb.velocity = trans.forward * speed;
     }
 
     private void OnTriggerEnter(Collider collider)
     {
         if (collider.CompareTag("QuadEmpty"))
         {
-            game.AddScore(collider.gameObject.GetComponent<Quad>().position);
-            StartCoroutine(CollisionCooldown());
+            game.AddScore(collider.gameObject.GetComponent<IPosition>().Take());
         }
 
         if (collider.CompareTag("Quad"))
         {
-            game.ZeroingMultiplier(collider.gameObject.GetComponent<Quad>().position);
-            StartCoroutine(CollisionCooldown());
+            game.BreakMultiplier(collider.gameObject.GetComponent<IPosition>().Take());
+            Destroy(collider.gameObject);
         }
 
         if (collider.CompareTag("QuadFinish"))
@@ -71,12 +94,5 @@ public class Player : MonoBehaviour
             game.FinishLevel();
             Destroy(collider.gameObject);
         }
-    }
-
-    IEnumerator CollisionCooldown()
-    {
-        boxcollider.enabled = false;
-        yield return new WaitForSeconds(0.15f);
-        boxcollider.enabled = true;
     }
 }

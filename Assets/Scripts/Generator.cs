@@ -18,9 +18,8 @@ public class Generator : MonoBehaviour
         StartCoroutine(GeneratingLevel(start, distance, lvl));
     }
 
-    public IEnumerator GeneratingLevel(int start, int distance, int lvl)
+    private IEnumerator GeneratingLevel(int start, int distance, int lvl)
     {
-        game.GameStateGame();
         prefabsStart = start;
         prefabsDistance = distance;
         game.goPlayer.transform.position = new Vector3(0, 0, 0);
@@ -29,12 +28,37 @@ public class Generator : MonoBehaviour
             GenerateFigure(i, Random.Range(0, 10));
             if (i > 5)
             {
-                float cooldown = 1.0f - 0.05f * lvl;
+                float cooldown = 0.1f; // 1.0f - 0.05f * lvl;
                 if (cooldown < 0) cooldown = 0;
                 yield return new WaitForSeconds(cooldown);
             }
         }
         Instantiate(prefabQuadFinish, new Vector3(0.5f, 0.5f, prefabsStart + ((lvl * 15) * prefabsDistance)), Quaternion.identity, quadPrefabs);
+    }
+
+    public void InstantiatePrefab(int i, float position, GameObject go, float x, float y)
+    {
+        GameObject newquad = Instantiate(go, new Vector3(x, y, prefabsStart + (position / 4 * prefabsDistance)), Quaternion.identity, quadPrefabs);
+        newquad.GetComponent<Quad>().position = ((int)position);
+        quad.Add(newquad);
+    }
+
+    public void DeleteQuads(int j)
+    {
+        for (int i = j; i < j + 4; i++)
+        {
+            Destroy(quad[i], 2.0f);
+        }
+    }
+
+    public void DeletePrefabs()
+    {
+        foreach (GameObject go in quad)
+        {
+            if (go != null) Destroy(go);
+        }
+
+        quad.Clear();
     }
 
     public void GenerateFigure(int i, int figure)
@@ -112,30 +136,5 @@ public class Generator : MonoBehaviour
                 InstantiatePrefab(i + 3, i, prefabEmpty, 0, 1);
                 break;
         }
-    }
-
-    public void InstantiatePrefab(int i, float position, GameObject go, float x, float y)
-    {
-        GameObject newquad = Instantiate(go, new Vector3(x, y, prefabsStart + (position / 4 * prefabsDistance)), Quaternion.identity, quadPrefabs);
-        newquad.GetComponent<Quad>().position = ((int)position);
-        quad.Add(newquad);
-    }
-
-    public void DeleteQuads(int j)
-    {
-        for (int i = j; i < j + 4; i++)
-        {
-            Destroy(quad[i], 2.0f);
-        }
-    }
-
-    public void DeletePrefabs()
-    {
-        foreach (GameObject go in quad)
-        {
-            if (go != null) Destroy(go);
-        }
-
-        quad.Clear();
     }
 }
