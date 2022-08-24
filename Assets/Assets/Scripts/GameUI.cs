@@ -6,12 +6,12 @@ public class GameUI : MonoBehaviour
 {
     [SerializeField] private Core core;
 
-    public GameObject canvasMenu;
-    public Text textMultiplier, textScore, textFinishScore, textFinishTitle, textLifes, textMistakesMax, textMistakesCurrent;
-    public GameObject goTextMultiplier, goTextScore, panelFinish, uiJoystick, uiJoystickSwitcher, canvasTap;
-    public Slider sliderLifes;
-    public GameObject buttonContinue, buttonRestart, joystick;
-    public Animation animMultiplier, animScore;
+    [SerializeField] private GameObject canvasMenu;
+    [SerializeField] private Text textMultiplier, textScore, textFinishScore, textFinishTitle, textLifes, textMistakesMax, textMistakesCurrent;
+    [SerializeField] private GameObject goTextMultiplier, goTextScore, panelFinish, uiJoystick, uiJoystickSwitcher, canvasTap;
+    [SerializeField] private Slider sliderLifes;
+    [SerializeField] private GameObject buttonContinue, buttonRestart;
+    [SerializeField] private Animation animMultiplier, animScore;
 
     private void OnEnable()
     {

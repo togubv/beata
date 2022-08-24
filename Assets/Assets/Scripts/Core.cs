@@ -3,20 +3,14 @@ using UnityEngine.UI;
 
 public class Core : MonoBehaviour
 {
-    public Generator generator;
-    public Player player;
+    [SerializeField] private Generator generator;
 
     [SerializeField] private Slider sliderLifes;
 
-    public GameState gameState;
-    public int mistakes, multiplier, score;
-    public GameObject goPlayer;
-    public int lifes;
-    public float Speed => speed;
-
-    private float speed = 6, savedSpeed;
-    private int currentlvl = 1;
-    
+    [SerializeField] public GameState gameState;
+    [SerializeField] public int mistakes, multiplier, score;
+    [SerializeField] public GameObject goPlayer;
+    [SerializeField] public int lifes;
 
     public delegate void UpdateScoreHandler(int oldValue, int newValue);
     public event UpdateScoreHandler UpdateScoreHandlerEvent;
@@ -31,6 +25,11 @@ public class Core : MonoBehaviour
     public event UpdateGameStateHandler UpdateGameStateHandlerEvent;
     public delegate void UpdateLevelStateHandler(LevelState state);
     public event UpdateLevelStateHandler UpdateLevelStateHandlerEvent;
+
+    public float Speed => speed;
+
+    private float speed = 6, savedSpeed;
+    private int currentlvl = 1;
 
     private void Awake()
     {

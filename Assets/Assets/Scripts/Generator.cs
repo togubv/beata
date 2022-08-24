@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Generator : MonoBehaviour
 {
-    public Core core;
+    [SerializeField] private Core core;
 
     [SerializeField] private Quad prefabQuad, prefabQuadFinish, prefabQuadEmpty;
 
@@ -12,6 +12,7 @@ public class Generator : MonoBehaviour
     [SerializeField] private List<Quad> poolQuadEmpty;
     [SerializeField] private List<Quad> poolQuadFinish;
     [SerializeField] private List<Quad> quads;
+
     private int prefabsStart = 20;
     private int prefabsDistance = 10;
 

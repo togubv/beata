@@ -4,12 +4,13 @@ public class Quad : MonoBehaviour, IPosition
 {
     [SerializeField] private QuadType quadType;
 
-    public int position;
     public QuadType GetQuadType => quadType;
+
+    public int position;
 
     public int Take()   
     {
-        return this.position;
+        return position;
     }
 
     public void ReturnToPool()
