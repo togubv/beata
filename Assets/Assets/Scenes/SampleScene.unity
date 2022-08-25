@@ -1091,14 +1091,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   generator: {fileID: 965930667}
-  player: {fileID: 128683082}
   sliderLifes: {fileID: 1935422113}
-  gameState: 0
-  mistakes: 0
-  multiplier: 0
-  score: 0
-  goPlayer: {fileID: 128683077}
-  lifes: 0
+  _gameState: 0
+  _mistakes: 0
+  _multiplier: 0
+  _score: 0
+  _goPlayer: {fileID: 128683077}
+  _lifes: 3
 --- !u!4 &509962712
 Transform:
   m_ObjectHideFlags: 0
@@ -3728,7 +3727,6 @@ MonoBehaviour:
   sliderLifes: {fileID: 1935422113}
   buttonContinue: {fileID: 1065279498}
   buttonRestart: {fileID: 1911779159}
-  joystick: {fileID: 1974723542}
   animMultiplier: {fileID: 783324761}
   animScore: {fileID: 655616809}
 --- !u!1 &1630060866

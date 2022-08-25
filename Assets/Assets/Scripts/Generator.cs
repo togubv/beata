@@ -8,14 +8,21 @@ public class Generator : MonoBehaviour
 
     [SerializeField] private Quad prefabQuad, prefabQuadFinish, prefabQuadEmpty;
 
-    [SerializeField] private List<Quad> poolQuad;
-    [SerializeField] private List<Quad> poolQuadEmpty;
-    [SerializeField] private List<Quad> poolQuadFinish;
-    [SerializeField] private List<Quad> quads;
+    private List<Quad> poolQuad;
+    private List<Quad> poolQuadEmpty;
+    private List<Quad> poolQuadFinish;
+    private List<Quad> quads;
 
     private int prefabsStart = 20;
     private int prefabsDistance = 10;
 
+    private void Start()
+    {
+        poolQuad = new List<Quad>();
+        poolQuadEmpty = new List<Quad>();
+        poolQuadFinish = new List<Quad>();
+        quads = new List<Quad>();
+    }
     public void GenerateLevel(int start, int distance, int lvl)
     {
         StartCoroutine(GeneratingLevel(start, distance, lvl));

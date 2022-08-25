@@ -7,15 +7,13 @@ public class Core : MonoBehaviour
 
     [SerializeField] private Slider sliderLifes;
 
-    [SerializeField] public GameState gameState;
-    [SerializeField] public int mistakes, multiplier, score;
-    [SerializeField] public GameObject goPlayer;
-    [SerializeField] public int lifes;
+    [SerializeField] private GameObject _goPlayer;
+    [SerializeField] private int _lifes;
 
-    public delegate void UpdateScoreHandler(int oldValue, int newValue);
-    public event UpdateScoreHandler UpdateScoreHandlerEvent;
-    public delegate void UpdateMultiplierHandler(int oldValue, int newValue);
-    public event UpdateMultiplierHandler UpdateMultiplierHandlerEvent;
+    public delegate void Update_scoreHandler(int oldValue, int newValue);
+    public event Update_scoreHandler UpdateScoreHandlerEvent;
+    public delegate void Update_multiplierHandler(int oldValue, int newValue);
+    public event Update_multiplierHandler UpdateMultiplierHandlerEvent;
     public delegate void UpdateMistakeHandler(int oldValue, int newValue);
     public event UpdateMistakeHandler UpdateMistakeHandlerEvent;
     public delegate void UpdateGameSpeedHandler(float speed);
@@ -25,17 +23,26 @@ public class Core : MonoBehaviour
     public event UpdateGameStateHandler UpdateGameStateHandlerEvent;
     public delegate void UpdateLevelStateHandler(LevelState state);
     public event UpdateLevelStateHandler UpdateLevelStateHandlerEvent;
-
+    
     public float Speed => speed;
+    public int mistakes => _mistakes;
+    public int multiplier => _multiplier;
+    public int score => _score;
+    public int lifes => _lifes;
+    public GameObject goPlayer => _goPlayer;
+    public GameState gameState => _gameState;
 
+    private GameState _gameState;
+    private int _mistakes, _multiplier, _score;
     private float speed = 6, savedSpeed;
     private int currentlvl = 1;
 
     private void Awake()
     {
-        Screen.SetResolution(2160, 1080, true);
+        Screen.SetResolution(1920, 1080, true);
         this.savedSpeed = this.speed;
         ToggleGameState(GameState.Pause);
+        sliderLifes.value = lifes;
     }
 
     private void Update()
@@ -48,7 +55,7 @@ public class Core : MonoBehaviour
 
     public void ToggleGameState(GameState state)
     {
-        this.gameState = state;
+        this._gameState = state;
 
         switch ((int)state)
         {
@@ -71,7 +78,7 @@ public class Core : MonoBehaviour
 
     public void ToggleMenuPause()
     {
-        if (gameState == GameState.Game)
+        if (_gameState == GameState.Game)
         {
             ToggleGameState(GameState.Pause);
             return;
@@ -82,50 +89,50 @@ public class Core : MonoBehaviour
 
     public void IncreaseScore(int count)
     {
-        int oldValue = this.score;
-        this.score += count;
+        int oldValue = this._score;
+        this._score += count;
 
-        UpdateScoreHandlerEvent?.Invoke(oldValue, this.score);
+        UpdateScoreHandlerEvent?.Invoke(oldValue, this._score);
     }
 
     public void DecreaseScore(int count)
     {
-        if (this.score < count)
+        if (this._score < count)
             return;
 
-        int oldValue = this.score;
-        this.score -= count;
+        int oldValue = this._score;
+        this._score -= count;
 
-        UpdateScoreHandlerEvent?.Invoke(oldValue, this.score);
+        UpdateScoreHandlerEvent?.Invoke(oldValue, this._score);
     }
 
     public void IncreaseMultiplier(int count)
     {
-        int oldValue = this.multiplier;
-        this.multiplier += count;
+        int oldValue = this._multiplier;
+        this._multiplier += count;
 
-        UpdateMultiplierHandlerEvent?.Invoke(oldValue, this.multiplier);
+        UpdateMultiplierHandlerEvent?.Invoke(oldValue, this._multiplier);
     }
 
     public void DecreaseMultiplier(int count)
     {
-        if (this.multiplier < count)
+        if (this._multiplier < count)
             return;
 
-        int oldValue = this.multiplier;
-        this.multiplier -= count;
+        int oldValue = this._multiplier;
+        this._multiplier -= count;
 
-        UpdateMultiplierHandlerEvent?.Invoke(oldValue, this.multiplier);
+        UpdateMultiplierHandlerEvent?.Invoke(oldValue, this._multiplier);
     }
 
     public void IncreaseMistakes(int count)
     {
-        int oldCount = this.mistakes;
-        this.mistakes += count;
+        int oldCount = this._mistakes;
+        this._mistakes += count;
 
-        UpdateMistakeHandlerEvent?.Invoke(oldCount, this.mistakes);
+        UpdateMistakeHandlerEvent?.Invoke(oldCount, this._mistakes);
 
-        if (this.mistakes >= lifes && lifes < 51)
+        if (this._mistakes >= lifes && lifes < 51)
         {
             LoseLevel();
         }
@@ -133,18 +140,18 @@ public class Core : MonoBehaviour
 
     public void DecreaseMistake(int count)
     {
-        if (this.mistakes < count)
+        if (this._mistakes < count)
             return;
 
-        int oldCount = this.mistakes;
-        this.mistakes -= count;
+        int oldCount = this._mistakes;
+        this._mistakes -= count;
 
-        UpdateMistakeHandlerEvent?.Invoke(oldCount, this.mistakes);
+        UpdateMistakeHandlerEvent?.Invoke(oldCount, this._mistakes);
     }
 
     public void BreakMultiplier(int position)
     {
-        DecreaseMultiplier(this.multiplier);
+        DecreaseMultiplier(this._multiplier);
         IncreaseMistakes(1);
 
         generator.ReturnQuads(position);
@@ -153,7 +160,7 @@ public class Core : MonoBehaviour
     public void AddScore(int position)
     {
         IncreaseMultiplier(1);
-        IncreaseScore(10 * multiplier);
+        IncreaseScore(10 * _multiplier);
 
         generator.ReturnQuads(position);
     }
@@ -183,7 +190,7 @@ public class Core : MonoBehaviour
         ToggleGameState(GameState.Game);
         UpdateLevelStateHandlerEvent?.Invoke(LevelState.Start);
 
-        DecreaseMultiplier(this.multiplier);        
+        DecreaseMultiplier(this._multiplier);        
 
         generator.ReturnToPoolOtherPrefabs();
         currentlvl++;
@@ -194,11 +201,11 @@ public class Core : MonoBehaviour
 
     public void StartGame()
     {
-        DecreaseScore(this.score);
-        DecreaseMistake(this.mistakes);
+        DecreaseScore(this._score);
+        DecreaseMistake(this._mistakes);
         this.savedSpeed = 6;
         UpdateGameSpeed(this.savedSpeed);
-        lifes = (int)sliderLifes.value;
+        _lifes = (int)sliderLifes.value;
         currentlvl = 1;
         NextLevel();
     }
